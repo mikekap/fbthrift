@@ -58,7 +58,11 @@ class PthreadMutex {
         timeout_duration);
     struct timespec ts;
     Util::toTimespec(ts, Util::currentTime() + durationMs.count());
+#if defined(_POSIX_TIMEOUTS) && (_POSIX_TIMEOUTS >= 200112L)
     return 0 == pthread_mutex_timedlock(&pthread_mutex_, &ts);
+#else
+    return try_lock();
+#endif
   }
 
   void unlock() {
@@ -113,7 +117,11 @@ class PthreadRWMutex {
         timeout_duration);
     struct timespec ts;
     Util::toTimespec(ts, Util::currentTime() + durationMs.count());
+#if defined(_POSIX_TIMEOUTS) && (_POSIX_TIMEOUTS >= 200112L)
     return 0 == pthread_rwlock_timedwrlock(&rw_lock_, &ts);
+#else
+    return try_lock();
+#endif
   }
 
   void unlock() {
@@ -136,7 +144,11 @@ class PthreadRWMutex {
         timeout_duration);
     struct timespec ts;
     Util::toTimespec(ts, Util::currentTime() + durationMs.count());
+#if defined(_POSIX_TIMEOUTS) && (_POSIX_TIMEOUTS >= 200112L)
     return 0 == pthread_rwlock_timedrdlock(&rw_lock_, &ts);
+#else
+    return try_lock_shared();
+#endif
   }
 
   void unlock_shared() {

@@ -99,7 +99,7 @@ class CppGenerator(t_generator.Generator):
 
     _base_to_cpp_typename = {
         t_base.void: 'void',
-        t_base.string: 'std::string',
+        t_base.string: 'folly::fbstring',
         t_base.bool: 'bool',
         t_base.byte: 'int8_t',
         t_base.i16: 'int16_t',
@@ -747,7 +747,6 @@ class CppGenerator(t_generator.Generator):
                 out().defn(self._get_process_function_signature_async(service,
                                                                   function),
                        name="async_" + function.name,
-                       modifiers='virtual',
                        delete=True)
                 if self.flag_future:
                     out().defn(self._get_process_function_signature_future(
@@ -821,7 +820,6 @@ class CppGenerator(t_generator.Generator):
                     out().defn(self._get_process_function_signature(service,
                                                                 function),
                            name=function.name,
-                           modifiers='virtual',
                            delete=True)
                 if self.flag_future:
                     self._generate_server_future_function(service, function)

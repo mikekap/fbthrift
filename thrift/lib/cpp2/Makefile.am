@@ -127,7 +127,7 @@ libthriftcpp2_la_SOURCES = Version.cpp \
          ../cpp/ssl/SSLUtils.cpp
 
 
-libthriftcpp2_la_LIBADD = ../cpp/libthrift.la libsaslstubs.a -lkrb5 -lgssapi_krb5 -lsnappy -lnuma -lboost_thread
+libthriftcpp2_la_LIBADD = ../cpp/libthrift.la -L. -lsaslstubs
 libthriftcpp2_la_LDFLAGS = -version-info $(LT_VERSION) $(BOOST_LDFLAGS)
 libthriftcpp2_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBEVENT_CPPFLAGS) -I../cpp -I$(top_builddir)/../../gperftools-2.0.99/src
 

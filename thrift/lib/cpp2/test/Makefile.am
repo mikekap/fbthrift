@@ -21,8 +21,8 @@ libService_a_CPPFLAGS = $(AM_CPPFLAGS) $(LIBEVENT_CPPFLAGS) -I../../cpp -I$(top_
 check_PROGRAMS = ThriftServerTest
 
 ThriftServerTest_SOURCES = ThriftServerTest.cpp
-ThriftServerTest_LDADD = ../libthriftcpp2.la ../libsaslstubs.a libService.a ../../cpp/libthrift.la -levent -lkrb5 -lsnappy -lsasl2 -lfolly  -lgssapi_krb5 $(BOOST_THREAD_LIB) -lboost_thread
-ThriftServerTest_LDFLAGS = -lglog -lgtest
+ThriftServerTest_LDADD = -L../ libService.a ../libsaslstubs.a ../libthriftcpp2.la ../../cpp/libthrift.la
+ThriftServerTest_LDFLAGS = -lglog -lgflags -lgtest $(BOOST_LDFLAGS)
 ThriftServerTest_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_builddir)/../../gperftools-2.0.99/src
 
 TESTS = ThriftServerTest

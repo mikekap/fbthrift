@@ -213,7 +213,7 @@ unique_ptr<IOBuf> THeader::removeHeader(IOBufQueue* queue,
     const IOBuf* nextBuf = headBuf;
     bool success = false;
     do {
-      auto remainingDataLen = nextBuf->length();
+      size_t remainingDataLen = nextBuf->length();
       size_t offset = 0;
       auto ioBufData = nextBuf->data();
       do {

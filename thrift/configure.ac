@@ -44,7 +44,7 @@ AC_ARG_VAR([PY_INSTALL_HOME], [Prefix for installing Python modules using
 AS_IF([test x"$PY_PREFIX" != x],
           [PY_INSTALL_ARGS="--prefix '$PY_PREFIX'"],
       [test x"$PY_INSTALL_HOME" != x],
-          [PY_INSTALL_ARGS="--home '$PY_INSTALL_HOME'"
+          [PY_INSTALL_ARGS="--prefix='' --home '$PY_INSTALL_HOME'"
            PY_RUN_ENV="PYTHONPATH='$PY_INSTALL_HOME/lib/python'"])
 
 AC_SUBST([PY_INSTALL_ARGS])
@@ -143,16 +143,18 @@ fi
 AX_THRIFT_LIB(cpp, [C++], yes)
 have_cpp=yes
 if test "$with_cpp" = "yes";  then
-  AC_CHECK_LIB([glog],[openlog],[],[AC_MSG_ERROR(
-             [Please install google-glog library])])
-  AC_CHECK_LIB([gflags],[getenv],[],[AC_MSG_ERROR(
-             [Please install google-gflags library])])
-  AC_CHECK_LIB([snappy], [main], [], [AC_MSG_ERROR(
-             [Please install snappy library])])
-  AC_CHECK_LIB([numa], [numa_available], [], [AC_MSG_ERROR(
-             [Please install numa library])])
-  AC_CHECK_LIB([folly], [getenv], [], [AC_MSG_ERROR(
-             [Please install folly library])])
+  AC_CHECK_LIB([glog],[openlog])
+  AS_IF([test "x$ac_cv_lib_glog_openlog" != "xyes"],
+        [AC_MSG_ERROR([Please install google-glog library])])
+  AC_CHECK_LIB([gflags],[getenv])
+  AS_IF([test "x$ac_cv_lib_gflags_getenv" != "xyes"],
+        [AC_MSG_ERROR([Please install google-gflags library])])
+  AC_CHECK_LIB([snappy], [main])
+  AS_IF([test "x$ac_cv_lib_snappy_main" != "xyes"],
+        [AC_MSG_ERROR([Please install snappy library])])
+  AC_CHECK_LIB([folly], [getenv])
+  AS_IF([test "x$ac_cv_lib_folly_getenv" != "xyes"],
+        [AC_MSG_ERROR([Please install folly library])])
 
   AX_BOOST_BASE([1.40.0])
   if test "x$succeeded" != "xyes" ; then
@@ -187,7 +189,8 @@ if test "$with_cpp" = "yes";  then
   AC_CHECK_HEADER([gssapi/gssapi_generic.h], [], [
     AC_MSG_ERROR([Please install libkrb5-dev])
   ], [])
-
+  AC_CHECK_LIB([krb5], [krb5_init_context])
+  AC_CHECK_LIB([gssapi_krb5], [gss_acquire_cred])
 
   AC_CHECK_LIB(sasl2, sasl_client_new, [], [
     AC_MSG_ERROR([Please install libsasl2])
@@ -197,9 +200,8 @@ if test "$with_cpp" = "yes";  then
     AC_MSG_ERROR([Please install libsnappy-dev])
   ], [])
 
-  AC_CHECK_HEADER([numa.h], [], [
-    AC_MSG_ERROR([Please install libnuma-dev])
-  ], [])
+  AC_CHECK_HEADERS([numa.h])
+  AC_CHECK_LIB([numa], [numa_available])
 
   AX_LIB_ZLIB([1.2.3])
   have_zlib=$success

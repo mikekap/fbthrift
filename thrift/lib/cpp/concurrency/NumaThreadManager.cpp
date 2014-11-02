@@ -17,9 +17,17 @@
 #include "NumaThreadManager.h"
 
 #include <glog/logging.h>
+#ifdef HAVE_NUMA_H
 #include <numa.h>
 #ifdef LIBNUMA_API_VERSION
 #include <numacompat1.h>
+#endif
+#else
+int numa_available(void) { return -1; }
+int numa_max_node(void) { abort(); }
+int numa_run_on_node(int node) { abort(); }
+void numa_set_preferred(int node) { abort(); }
+void numa_tonode_memory(void *start, size_t size, int node) { abort(); }
 #endif
 
 #include <folly/Memory.h>
@@ -87,6 +95,9 @@ void NumaRunnable::run() {
     size_t stack_size;
     size_t guard_size;
 
+#if HAVE_NUMA_H
+    // Note OSX has a different way to get stack/guards, but since
+    // there is no libnuma, we don't need to have this work.
     SCOPE_EXIT{     pthread_attr_destroy(&thread_attrs); };
 
     if (pthread_getattr_np(pthread_self(), &thread_attrs) != 0) {
@@ -100,7 +111,7 @@ void NumaRunnable::run() {
     if (pthread_attr_getguardsize(&thread_attrs, &guard_size) != 0) {
       LOG(ERROR) << "Failed to get stack guard size for the current thread.";
     }
-
+#endif
     static const size_t page_sz = sysconf(_SC_PAGESIZE);
 
     if (((uint64_t)stack_addr) % page_sz == 0) {

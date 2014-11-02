@@ -46,7 +46,7 @@ namespace apache { namespace thrift { namespace concurrency {
 class FunctionRunner : public Runnable {
  public:
   // This is the type of callback 'pthread_create()' expects.
-  typedef void* (*PthreadFuncPtr)(void *arg);
+  typedef void (*PthreadFuncPtr)(void *arg);
   // This a fully-generic void(void) callback for custom bindings.
   typedef std::function<void()> VoidFunc;
 
